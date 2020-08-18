@@ -23,16 +23,8 @@ library(pheatmap)
 ```
 
 
-
-## INTRODUCTION
-
-Our work is inspired by the so called *Hit Song Science*, whose pioneer is the music entrepreneur Mike McCready. The Hit Song Science aims at predicting whether a song will be a hit before its distribution, by analyzing its audio features through machine learning algorithms. Therefore, our main research question is: *"Can we accurately predict whether a song will be a hit knowing some of its audio features?"* To answer this question we have applied some of the most relevant statistical learning models for classification on the dataset available at [link](https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset).
-
-
-
 ## DATA EXPLORATION
 
-We decided to consider the most recent data available, which is the dataset for the 10s. After having removed the duplicates, added and removed features, our dataset consists of 6258 songs (realized between 2010 and 2019) and 19 features. The audio features were extracted through the Spotify Web API, while the *hit*/*flop* categorization (respectively encoded as 1 and 0), is based on the Billboard Hot 100 hits ^[To have more information about each feature see: https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/ and https://www.kaggle.com/theoverman/the-spotify-hit-predictor-data set]. In addition, it is possible to see that many songs are composed in collaboration (featuring) with other artists and we thought that this information could give a meaningful contribution to our analysis. Hence, we decided to create a new column *featuring* that encodes whether the song has been featured (1) or not (0).
 
 ```{r}
 dataset <- read.csv("dataset-of-10s.csv", header = TRUE)
@@ -56,8 +48,8 @@ dataset$target <- factor(dataset$target)                           # target into
 ```
 
 
-Before fitting the models, it is useful to explore the variables distribution. 
-Since the main scope of the project is to estimate whether a song has the potential to become a hit or not depending on some variables, it would be interesting to have an overview on the distribution of those features according to the songs success.
+Explore the variables distribution according to the success
+
 ```{r}
 # create a new dataset with labels for target and featuring for better visualization
 df.labels <- dataset[, 3:19]
@@ -80,9 +72,8 @@ plot.songs <- function(x) {
 plot.songs(df.labels)
 ```
 
-The major differences in the distribution can be seen considering the variables *danceability*, *energy*, *valence* and *featuring*.
 
-Furthermore, we can visualize with a heatmap the correlation among the numerical features of our dataset. We notice that, the majority of them are independent, while few of them are positively correlated such as *energy* and *loudness* or negatively correlated like *energy* and *acousticness*.
+Visualize with a heatmap the correlation among the numerical features of our dataset
 ```{r}
 pheatmap(cor(as.matrix(dataset[, 3:17])), cell.width = 10, cell.height = 10) 
 ```
@@ -91,19 +82,14 @@ pheatmap(cor(as.matrix(dataset[, 3:17])), cell.width = 10, cell.height = 10)
 
 ## STATISTICAL LEARNING MODELS
 
-In this section we are going to fit several statistical models in order to find the best technique(s), meaning the one(s) that minimize(s) the test error rate, and thus give a more accurate hit prediction. As shown before, we have 15 numerical predictors plus a categorical one (featuring) and a binary categorical response variable. Therefore, we are going to address a classification problem.
-
-
 ### LOGISTIC REGRESSION 
 
-The logistic regression models the probability for a song of being a *hit* or a *flop* given the 16 predictors.
 ```{r}
 glm.fit <- glm(target ~.,  family = binomial, data = dataset[, 3:19])
 summary(glm.fit)
 ```
 
-Looking at the p-value score, it appears that some predictors do not show clear evidence of a real association with the response variable. Therefore, we can compare the performance of the full logistic regression with the one of a regularization model. 
-We proceed by fitting the full logistic regression on our dataset. However, since the accuracy of a statistical model is given by the error on unseen data, we perform cross-validation to estimate its performance. In particular, we start with the **Validation Set approach** according to which we randomly split the dataset into two equally sized parts (train and test), we fit the model on the train set to predict the test error rate on the test data. Furthermore, since we know that this approach has some limitations such as the high dependence of the test error on the sets choice, we also perform **5-fold cross validation** to compare the results.
+Perform cross-validation to estimate its performance (Validation Set Approach and 5-fold cross validation)
 ```{r}
 set.seed(10)
 
@@ -137,8 +123,8 @@ cat("Full logistic regression test error with 5-fold CV is:", cv.full, "\n")
 ```
 
 
-As we mentioned before, we can compare the full logistic regression model with a regularization method in order to see which are the most relevant predictors. We choose **Lasso penalized logistic regression**.
-This model keeps all the predictors, but a penalty is imposed to the logistic model for having too many variables. Furthermore, Lasso regression does also feature selection insofar it forces some less contributive predictors to be exactly 0. Before fitting the model, we can perform cross-validation to tune the hyperparameter `lambda`, which determines the amount of coefficient shrinkage. Afterwards, we fit the logistic model on the train set and make predictions on the test data. Finally, we refit our lasso model on the full dataset with `lambda` chosen by cross-validation and examine the coefficient estimates. We notice that some coefficients are really close to 0, but none of them is exactly 0.
+Compare the full logistic regression model with a regularization method in order to see which are the most relevant predictors. We choose **Lasso penalized logistic regression**
+
 ```{r}
 set.seed(10)
 
@@ -158,13 +144,12 @@ log.lasso <- glmnet(x, y, family = 'binomial', alpha = 1)
 predict(log.lasso, type = 'coefficients', s = cv.lasso$lambda.min)[1:17, ]
 
 ```
-
-As a result, we notice that the performance of the two models fitted so far is extremely close to one another (test error around 0.18). Thus, even though Lasso penalizes some less relevant coefficients, the overall performance is not compromised.
+No feature selection since no coefficients are exactly 0
 
 
 ### SUPPORT VECTOR MACHINES
 
-Unlike logistic regression, which models the probability of being in a certain class, Support Vector Machines classify observations depending on which side of the hyperplane (the hyperplane divides the p-dimensional space into two halves) they lie. If our data had linear class boundaries, we would have fitted a Support Vector Classifier with a linear kernel. However, we found that the best performance is obtained by fitting a Support Vector Machine with a radial kernel. Furthermore, before fitting the model, in order to improve the final prediction, we can tune the hyperparameters `cost`, which estimates the magnitude of the hyperplane violations allowed and `gamma`, which is a penalization term for big distances. This is done by the `tune()` function, which performs a 10-fold CV and chooses the best values among the given ones. We tried with `cost=c(0.001, 0.01, 0.1, 1, 5, 10, 100)` and `gamma=c(0.01, 0.1, 1, 4)`. However, here we consider a limited range of values since the process is computationally expensive.
+Before fitting the model, in order to improve the final prediction, we can tune the hyperparameters `cost` and `gamma`. We tried with `cost=c(0.001, 0.01, 0.1, 1, 5, 10, 100)` and `gamma=c(0.01, 0.1, 1, 4)`. However, here we consider a limited range of values since the process is computationally expensive.
 ```{r}
 set.seed(10)
 
@@ -190,9 +175,6 @@ cat("Support vector machines test error is:", svm.err, "\n")
 
 ### DECISION TREES
 
-Classification trees split the feature space into regions following a tree structure and for each region the model predicts a single value.   
-
-In order to evaluate how well a classification tree performs, we first randomly split the dataset into two different sets, one used for fitting the tree on our train data and the other used for validation and test error estimation.
 ```{r}
 set.seed(1234)
 
@@ -206,21 +188,18 @@ tree.err <- mean(tree.pred != df.labels$target[-train])
 cat("Classification tree test error is:", tree.err, "\n")
 ```
 
-Now we can prune the tree to see if the performance improves, given that pruning should reduce overfitting by reducing its size. We are going to do so by using a cross-validation approach with the function `cv.tree()` and the argument `FUN = prune.misclass`. 
+Prune the tree
+
 ```{r}
 cv.song <- cv.tree(object = tree.train, FUN = prune.misclass)
 cv.song
 ```
 
-The output shows the cross-validation error rate (*dev*) for the corresponding number of leaves (*size*). The best number of leaves is represented by the one that minimizes the error rate, hence in this case it is 6.
-
-Now we build the pruned tree.
 ```{r}
 opt.size <- cv.song$size[which.min(cv.song$dev)]
 prune.songs <- prune.misclass(tree.train, best = opt.size)
 ```
 
-Plotting both the complete tree and the pruned one
 ```{r}
 par(mfrow = c(1, 2))
 plot(tree.train)
@@ -231,21 +210,19 @@ text(prune.songs, pretty = 0, cex = .7)
 title("Pruned tree")
 ```
 
-In this case we can see that the pruned tree and the initial one are the same. Hence, we do not need to compute the test error for the pruned one. From the plot we notice that the most important predictors of a song success are *instrumentalness*, *featuring*, *energy* and loudness.
-
-Unfortunately trees are known to be less accurate than other classical methods and have a high variance. In order to improve their performance, there are methods like *Bagging*, *Boosting* and *Random Forests*. Since Bagging is a particular case of Random Forests (when m = p) and bagged trees are usually correlated, with this technique we are likely to not get the best tree. Hence, we are going to perform only Boosting and Random Forests.
-
+In this case we can see that the pruned tree and the initial one are the same
 
 **Performing Boosting**
 
-The aim of boosting is improving the result of the model by reducing tree variance. The method keeps using the same model, but gives different weights to the observations.
+The aim of boosting is improving the result of the model by reducing tree variance
 ```{r}
 dataset$target <- as.numeric(dataset$target)
 dataset$target <- ifelse(dataset$target == 1, 0, 1) # in order to run the method we have to change the variable target into numeric
 ```
 
-Before fitting the model, there are three main hyperparameters that need to be tuned: *shrinkage*, which refers to the learning rate i.e. the contribution of each tree on the final outcome; *tree depth*, which controls the depth of individual trees; and *number of trees*. 
+Before fitting the model, tune the hyperparameters *shrinkage*, *tree depth* and *number of trees*. 
 Since this process is computationally expensive we have tried it with a wider range of parameters (`learning_rate = c(0.3, 0.1, 0.05, 0.01, 0.005)` and `interaction.depth = c(3, 5, 7, 9)`), but here we consider only some of those for efficiency and we perform 5-fold cross validation to choose the best ones.
+
 ```{r}
 # create grid  with all the values of the hyperparameters 
 hyper_grid <- expand.grid(
@@ -282,8 +259,8 @@ best.tree <- arrange(hyper, error)[1, 4] # best number of trees to grow
 hyper[1, ]
 ```
 
+Now we can fit the model with these hyperparameters and predict the test error rate
 
-After tuning, the best hyperparameters resulted to be: `interaction.depth = 7`, `shrinkage = 0.05`, `n.trees = 251`. Now we can fit the model with these hyperparameters and predict the test error rate.
 ```{r echo=TRUE, include=FALSE}
 boost.train <- gbm(target ~ ., data = dataset[train, 3:19], distribution = "bernoulli", n.trees = best.tree, interaction.depth = best.depth, shrinkage = best.shrinkage, verbose = F)
 
@@ -315,9 +292,6 @@ ggplot(data, aes(x = rel.inf, y = Variables, label = rel.inf)) +
   theme(panel.grid.major.y = element_blank())
 ```
 
-The output shows the relative influence given to the different predictors. It is interesting to notice that the predictors with the highest relative influence are the ones that show the most diverse distribution according to the song success in our data exploration density plots at the beginning of this report. In particular, we notice that *instrumentalness* is considered the most relevant predictor and the value of its influence differs a lot compared to all the other predictors. 
-Moreover, it is possible to notice that the boosting method has provided a relevant improvement on the test error: from ≅ 0.20 with the first classification tree, to ≅ 0.15 with the boosted tree.
-
 ```{r}
 dataset$target <- as.factor(dataset$target) # changing back target to factor
 ```
@@ -325,8 +299,9 @@ dataset$target <- as.factor(dataset$target) # changing back target to factor
 
 **Performing Random Forests**
 
-The aim of Random Forests is again improving the prediction accuracy. In this case the method works by adding another layer of randomness to prevent correlation among trees. Before each split `m` features (hyperparameter `mtry` in `randomForest()` function) are chosen at random from the `p` available, and splits are taken only by considering these variables.
-Before fitting the model, we tune the hyperparameters `mtry` and `ntree` which refers to the number of trees.
+Random Forests algorithms prevents correlation among trees.
+Before fitting the model, we tune the hyperparameters `mtry` and `ntree` which refers to the number of trees
+
 ```{r}
 set.seed(10)
 
@@ -339,7 +314,7 @@ rf <- train(target ~ ., data = dataset[train, 3:19], method = "rf", metric = "Ac
 opt.mtry <- rf$bestTune$mtry
 ```
 
-To tune `ntree` we tried with `c(250, 300, 500, 800, 1000)`. Here, to reduce the complexity we give the algorithm just two of these values. 
+To tune `ntree` we tried with `c(250, 300, 500, 800, 1000)`. Here, to reduce the complexity we give the algorithm just two of these values
 ```{r}
 set.seed(10)
 
@@ -362,7 +337,8 @@ results_tree <- resamples(store_maxtrees) # the best number of trees is 800
 # summary(results_tree) 
 ```
 
-We now fit the Random Forests model on the train data with the best mtry obtained which is 3 and the optimal number of trees, 800. In this case we do not need to compute the test error with CV, instead we can look at the OOB classification error to estimate it. Indeed, for any observation, the OOB predicts the response using all models that do not include that observation.
+In this case we do not need to compute the test error with CV, instead we can look at the OOB classification error to estimate it
+
 ```{r}
 rf.train <- randomForest(target ~ ., data = dataset[, 3:19], subset = train, mtry = opt.mtry, importance = TRUE, ntree = 800) 
 
@@ -373,23 +349,7 @@ varImpPlot(rf.train, main = "Random Forests - Variable importance")
 rf.train
 ```
 
-From the output of the Random Forests we can see that the OOB error is slightly higher than the test error estimated with boosting. Nevertheless, Random Forests provide a considerable test error reduction compared to the simple tree classifier. 
-Moreover, the Global Variable Importance measured by the Mean Decrease Accuracy shows that the most important Random Forests predictors, which are *instrumentalness*, *featuring* and *energy* are similar to the ones calculated with boosting. Mean Decrease in Gini index measures the importance of a variable as well and even here the most important variable is *instrumentalness* while other predictors are closer to each other.
-
-
-
-## RESULTS AND FINAL CONSIDERATIONS
-
-In order to answer the initial research question *"Can we accurately predict whether a song will be a hit knowing some of its audio features?"* we fitted several statistical models on our dataset.  
-To recap our analysis, we started with a Logistic Regression model and we compared it with Lasso logistic regression. After Cross Validation (Set Validation and 5-fold Cross Validation), to compare the test errors, we realized that the overall performance of the initial model was not compromised by the coefficients penalization imposed by Lasso. However, in our case we noticed that Lasso does not perform a real features selection insofar no coefficients resulted to be exactly 0.
-We moved on by fitting a Support Vector Machine on our train data and, after hyperparameter tuning, the model appeared to slightly outperform the previous ones. 
-Lastly, we applied tree based methods. In general, classification trees tend to be not so accurate and indeed we noticed that the test error was slightly bigger than the ones computed with the previous methods. In order to increase the accuracy of our classification tree, we implemented Boosting and Random Forests and we noticed that with both techniques there was a relevant performance improvement.  
-
-Thus, we can state that the statistical models we have implemented return a quite accurate prediction on whether a song will be a hit or not. In fact, as can be seen from the barplot below, which displays the results of our analysis, the test errors oscillate between 15% and 20%. The simple classification tree appears to be the less accurate method, but at the same time if we apply the boosting algorithm to reduce its variance, the obtained tree results to be the most accurate compared to all the other considered methods. 
-
-In addition, our analysis also provides an estimate of the most relevant audio features that influence a song success. Lasso showed that no predictors are completely irrelevant, but *duration_ms*, *tempo*, *key*, and *chorus_hit* are the least significant.
-Almost on the same page was the relative importance of the different variables given by the Boosting and Random Forests methods that show how *instrumentalness*, *featuring*, *energy*, *loudness* and *danceability* are the most relevant song success predictors.   
-To be more precise, by looking at the value of their coefficients and at the decision trees, it is possible to build a hit song prototype. The ideal hit song should have a low level of instrumentalness i.e. it should have more spoken words than just sounds. Furthermore, having a featuring is a really good predictor of song success. Moreover, the energy of the track should be low, meaning that the song should not be too fast or noisy; but at the same time loudness is positively correlated with success. Finally, in line with what we expect from a hit song, it should have a high level of danceability i.e. suitable for dancing. 
+## RESULTS 
 
 ```{r}
 model <- c("Simple Tree","Lasso log. reg.", "Full log. reg.", "SVM", "Random Forests", "Boosted Tree")
