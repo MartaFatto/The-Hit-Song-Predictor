@@ -1,7 +1,6 @@
 ---
 title: "THE HIT SONG PREDICTOR"
 author: "Marta Fattorel & Fabio Taddei Dalla Torre"
-output: html_document
 ---
 
 
