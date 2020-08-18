@@ -72,8 +72,8 @@ plot.songs <- function(x) {
 plot.songs(df.labels)
 ```
 
-
 Visualize with a heatmap the correlation among the numerical features of our dataset
+
 ```{r}
 pheatmap(cor(as.matrix(dataset[, 3:17])), cell.width = 10, cell.height = 10) 
 ```
@@ -90,6 +90,7 @@ summary(glm.fit)
 ```
 
 Perform cross-validation to estimate its performance (Validation Set Approach and 5-fold cross validation)
+
 ```{r}
 set.seed(10)
 
@@ -149,7 +150,10 @@ No feature selection since no coefficients are exactly 0
 
 ### SUPPORT VECTOR MACHINES
 
-Before fitting the model, in order to improve the final prediction, we can tune the hyperparameters `cost` and `gamma`. We tried with `cost=c(0.001, 0.01, 0.1, 1, 5, 10, 100)` and `gamma=c(0.01, 0.1, 1, 4)`. However, here we consider a limited range of values since the process is computationally expensive.
+Before fitting the model, in order to improve the final prediction, we can tune the hyperparameters `cost` and `gamma`. 
+We tried with `cost=c(0.001, 0.01, 0.1, 1, 5, 10, 100)` and `gamma=c(0.01, 0.1, 1, 4)`. 
+However, here we consider a limited range of values since the process is computationally expensive.
+
 ```{r}
 set.seed(10)
 
@@ -160,7 +164,8 @@ tune.out <- tune(svm, target ~., data = dataset[train, 3:19], kernel = "radial",
 # summary(tune.out)
 ```
 
-The optimal cost results to be 1, while the best gamma is 0.1. We proceed by fitting our model on the train data to predict the test error rate.
+The optimal cost results to be 1, while the best gamma is 0.1. We proceed by fitting our model on the train data to predict the test error rate
+
 ```{r}
 best.svm <- tune.out$best.model
 opt.gamma <- best.svm$gamma
@@ -212,9 +217,11 @@ title("Pruned tree")
 
 In this case we can see that the pruned tree and the initial one are the same
 
+
 **Performing Boosting**
 
 The aim of boosting is improving the result of the model by reducing tree variance
+
 ```{r}
 dataset$target <- as.numeric(dataset$target)
 dataset$target <- ifelse(dataset$target == 1, 0, 1) # in order to run the method we have to change the variable target into numeric
