@@ -123,7 +123,8 @@ cat("Full logistic regression test error with 5-fold CV is:", cv.full, "\n")
 ```
 
 
-Compare the full logistic regression model with a regularization method in order to see which are the most relevant predictors. We choose **Lasso penalized logistic regression**
+Compare the full logistic regression model with a regularization method in order to see which are the most relevant predictors. 
+We choose **Lasso penalized logistic regression**
 
 ```{r}
 set.seed(10)
@@ -149,7 +150,7 @@ No feature selection since no coefficients are exactly 0
 
 ### SUPPORT VECTOR MACHINES
 
-Before fitting the model, in order to improve the final prediction, we can tune the hyperparameters `cost` and `gamma`. 
+Before fitting the model, tune the hyperparameters `cost` and `gamma`. 
 We tried with `cost=c(0.001, 0.01, 0.1, 1, 5, 10, 100)` and `gamma=c(0.01, 0.1, 1, 4)`. 
 However, here we consider a limited range of values since the process is computationally expensive.
 
@@ -163,7 +164,7 @@ tune.out <- tune(svm, target ~., data = dataset[train, 3:19], kernel = "radial",
 # summary(tune.out)
 ```
 
-The optimal cost results to be 1, while the best gamma is 0.1. We proceed by fitting our model on the train data to predict the test error rate
+Fit the model on the train data to predict the test error rate
 
 ```{r}
 best.svm <- tune.out$best.model
@@ -226,8 +227,9 @@ dataset$target <- as.numeric(dataset$target)
 dataset$target <- ifelse(dataset$target == 1, 0, 1) # in order to run the method we have to change the variable target into numeric
 ```
 
-Before fitting the model, tune the hyperparameters *shrinkage*, *tree depth* and *number of trees*. 
-Since this process is computationally expensive we have tried it with a wider range of parameters (`learning_rate = c(0.3, 0.1, 0.05, 0.01, 0.005)` and `interaction.depth = c(3, 5, 7, 9)`), but here we consider only some of those for efficiency and we perform 5-fold cross validation to choose the best ones.
+Tune the hyperparameters *shrinkage*, *tree depth* and *number of trees*. 
+We tried with (`learning_rate = c(0.3, 0.1, 0.05, 0.01, 0.005)` and `interaction.depth = c(3, 5, 7, 9)`), but here we consider only some of those for efficiency. 
+Perform 5-fold cross validation to choose the best ones
 
 ```{r}
 # create grid  with all the values of the hyperparameters 
@@ -265,7 +267,7 @@ best.tree <- arrange(hyper, error)[1, 4] # best number of trees to grow
 hyper[1, ]
 ```
 
-Now we can fit the model with these hyperparameters and predict the test error rate
+Fit the model with these hyperparameters and predict the test error rate
 
 ```{r echo=TRUE, include=FALSE}
 boost.train <- gbm(target ~ ., data = dataset[train, 3:19], distribution = "bernoulli", n.trees = best.tree, interaction.depth = best.depth, shrinkage = best.shrinkage, verbose = F)
@@ -306,7 +308,7 @@ dataset$target <- as.factor(dataset$target) # changing back target to factor
 **Performing Random Forests**
 
 Random Forests algorithms prevents correlation among trees.
-Before fitting the model, we tune the hyperparameters `mtry` and `ntree` which refers to the number of trees
+Tune the hyperparameters `mtry` and `ntree` which refers to the number of trees
 
 ```{r}
 set.seed(10)
@@ -321,6 +323,7 @@ opt.mtry <- rf$bestTune$mtry
 ```
 
 To tune `ntree` we tried with `c(250, 300, 500, 800, 1000)`. Here, to reduce the complexity we give the algorithm just two of these values
+
 ```{r}
 set.seed(10)
 
@@ -343,7 +346,7 @@ results_tree <- resamples(store_maxtrees) # the best number of trees is 800
 # summary(results_tree) 
 ```
 
-In this case we do not need to compute the test error with CV, instead we can look at the OOB classification error to estimate it
+No need to compute the test error with CV, look at the OOB classification error to estimate it
 
 ```{r}
 rf.train <- randomForest(target ~ ., data = dataset[, 3:19], subset = train, mtry = opt.mtry, importance = TRUE, ntree = 800) 
