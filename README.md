@@ -9,4 +9,4 @@ Our work is inspired by the so called *Hit Song Science*, whose pioneer is the m
 
 ## Licence
 
-This tool is available under the Creative Commons Attribution-ShareAlike License. Read more about this license from [https://creativecommons.org/licenses/by-sa/3.0/](https://creativecommons.org/licenses/by-sa/3.0/).
+This work is available under the Creative Commons Attribution-ShareAlike License. Read more about this license from [https://creativecommons.org/licenses/by-sa/3.0/](https://creativecommons.org/licenses/by-sa/3.0/).
