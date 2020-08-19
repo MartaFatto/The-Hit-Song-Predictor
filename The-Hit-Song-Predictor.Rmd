@@ -46,10 +46,9 @@ dataset <- within(dataset, rm('uri'))                              # drop uri
 dataset$target <- factor(dataset$target)                           # target into factor
 ```
 
-
-Explore the variables distribution according to the success
-
 ```{r}
+# Explore the variables distribution according to the success
+
 # create a new dataset with labels for target and featuring for better visualization
 df.labels <- dataset[, 3:19]
 df.labels$target <- ifelse(df.labels$target == 1, 'Hit', 'Flop')
@@ -71,9 +70,9 @@ plot.songs <- function(x) {
 plot.songs(df.labels)
 ```
 
-Visualize with a heatmap the correlation among the numerical features of our dataset
-
 ```{r}
+# Visualize with a heatmap the correlation among the numerical features of our dataset
+
 pheatmap(cor(as.matrix(dataset[, 3:17])), cell.width = 10, cell.height = 10) 
 ```
 
