@@ -4,6 +4,7 @@ author: "Marta Fattorel & Fabio Taddei Dalla Torre"
 ---
 
 
+Load necessary libraries
 ```{r message=FALSE, warning=FALSE}
 library(tree)
 library(ISLR)
@@ -71,9 +72,22 @@ plot.songs(df.labels)
 ```
 
 ```{r}
+# Further explore the distribution of instrumentalness according to the target
+
+ggplot() + 
+  geom_histogram(data = df.labels[df.labels$target == "Flop",], 
+                 aes(x=instrumentalness, fill="f"), bins = 30, alpha=0.5) +
+  geom_histogram(data = df.labels[df.labels$target == "Hit",], 
+                 aes(x=instrumentalness, fill="h"), bins = 30, alpha=0.5) +
+  labs(title="Instrumentalness in hit and flop songs") +
+  scale_colour_manual(name="Type of song", values=c("f" = "#F8766D","h" = "#00BFC4"), labels=c("f"= "Flop","h"="Hit")) + 
+  scale_fill_manual(name="Type of song",values=c("f"="#F8766D","h" =  "#00BFC4"),labels=c("f"="Flop","h"= "Hit"))
+```
+
+```{r}
 # Visualize with a heatmap the correlation among the numerical features of our dataset
 
-pheatmap(cor(as.matrix(dataset[, 3:17])), cell.width = 10, cell.height = 10) 
+pheatmap(cor(as.matrix(dataset[, 3:17])), cell.width = 10, cell.height = 10, cluster_rows = F, cluster_cols = F) 
 ```
 
 
