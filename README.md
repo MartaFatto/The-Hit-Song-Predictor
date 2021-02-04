@@ -14,7 +14,8 @@ Statistical Learning and Machine Learning techniques for classifications:
 
 [https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset](https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset)
 
-## Required libraries
+## Required R libraries
+R version: 4.0.3
  * tree 1.0.40
  * ISLR 1.2
  * ggpubr 0.4.0
