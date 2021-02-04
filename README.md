@@ -12,7 +12,7 @@ Statistical Learning and Machine Learning techniques for classifications:
 
 ## Dataset
 
-[https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset](https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset).
+[https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset](https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset)
 
 ## Authors
 
