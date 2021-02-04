@@ -14,6 +14,22 @@ Statistical Learning and Machine Learning techniques for classifications:
 
 [https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset](https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset)
 
+## Required libraries
+ * tree 1.0.40
+ * ISLR 1.2
+ * ggpubr 0.4.0
+ * ggplot2 3.3.3
+ * glmnet 4.1
+ * MASS 7.3.53
+ * randomForest 4.6.14
+ * e1071 1.7.4
+ * gbm 2.1.8
+ * caret 6.0.86
+ * dplyr 1.0.3
+ * reshape2 1.4.4
+ * scales 1.1.1
+ * pheatmap 1.0.12
+
 ## Authors
 
 * Marta Fattorel (marta.fattorel@studenti.unitn.it)
