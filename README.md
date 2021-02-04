@@ -1,6 +1,16 @@
 # The Hit Song Predictor
 
-Our work is inspired by the so called *Hit Song Science*, whose pioneer is the music entrepreneur Mike McCready. The Hit Song Science aims at predicting whether a song will be a hit before its distribution, by analyzing its audio features through machine learning algorithms. Therefore, our main research question is: *"Can we accurately predict whether a song will be a hit knowing some of its audio features?"* To answer this question we have applied some of the most relevant statistical learning models for classification on the dataset available at [https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset](https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset).
+Our work is inspired by the so called *Hit Song Science*, whose pioneer is the music entrepreneur Mike McCready. The Hit Song Science aims at predicting whether a song will be a hit before its distribution, by analyzing its audio features through machine learning algorithms. 
+Research question: *"Can we accurately predict whether a song will be a hit knowing some of its audio features?"* 
+Statistical Learning and Machine Learning techniques for classifications:
+* Logistic Regression, Lasso Logistic Regression
+* Support Vector Machines
+* Decision trees
+* Random Forests
+
+## Dataset
+
+[https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset](https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset).
 
 ## Authors
 
