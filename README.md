@@ -2,7 +2,7 @@
 
 ## Overview
 
-<div align="right">Our work is inspired by the so called *Hit Song Science*, whose pioneer is the music entrepreneur Mike McCready. The Hit Song Science aims at predicting whether a song will be a hit before its distribution, by analyzing its audio features through machine learning algorithms. 
+<div align="justify">Our work is inspired by the so called *Hit Song Science*, whose pioneer is the music entrepreneur Mike McCready. The Hit Song Science aims at predicting whether a song will be a hit before its distribution, by analyzing its audio features through machine learning algorithms. 
 
 Research question: *"Can we accurately predict whether a song will be a hit knowing some of its audio features?"* 
 
