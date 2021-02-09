@@ -18,12 +18,12 @@ library(reshape2)
 library(scales)
 library(pheatmap)
 ```
-
+``` r
 <style>
 body {
 text-align: justify}
 </style>
-
+```
 ## INTRODUCTION
 
 Our work is inspired by the so called *Hit Song Science*, whose pioneer
