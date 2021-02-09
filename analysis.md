@@ -31,7 +31,7 @@ whether a song will be a hit knowing some of its audio features?’* To
 answer this question we have applied some of the most relevant
 statistical learning models for classification on the dataset available
 at
-[link](https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset).</div>
+[link](https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset).
 
 ## DATA EXPLORATION
 
@@ -716,3 +716,5 @@ ggplot(performances, aes(x=model, y=test.error, label = scales::percent(test.err
     <https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/>
     and
     <https://www.kaggle.com/theoverman/the-spotify-hit-predictor-dataset>
+    
+    </div>
